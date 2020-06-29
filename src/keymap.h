@@ -2,8 +2,8 @@
  * original from ibus-fbterm
  */
 
-#include <fcitx-config/hotkey.h>
+#include <fcitx-utils/key.h>
 
 FcitxKeySym linux_keysym_to_fcitx_keysym(unsigned short keysym, unsigned short keycode);
 
-FcitxKeyState calculate_modifiers(FcitxKeyState state, FcitxKeySym keyval, char down);
+fcitx::KeyState calculate_modifiers(fcitx::KeyState state, FcitxKeySym keyval, char down);

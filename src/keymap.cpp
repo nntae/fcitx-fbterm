@@ -3,7 +3,7 @@
  */
 
 #include <linux/keyboard.h>
-#include <fcitx-config/hotkey.h>
+#include <fcitx-utils/key.h>
 #include "keymap.h"
 
 static FcitxKeySym linux_to_x[256] = {
@@ -270,38 +270,39 @@ FcitxKeySym linux_keysym_to_fcitx_keysym(unsigned short keysym, unsigned short k
         break;
     }
 
-    return keyval;
+    return FcitxKeySym(keyval);
 }
 
-FcitxKeyState calculate_modifiers(FcitxKeyState state, FcitxKeySym keyval, char down)
+fcitx::KeyState calculate_modifiers(fcitx::KeyState state, FcitxKeySym keyval, char down)
 {
-    FcitxKeyState mask = 0;
+    uint32_t calculatedState;
+    fcitx::KeyState mask = fcitx::KeyState::NoState;
     switch (keyval) {
     case FcitxKey_Shift_L:
     case FcitxKey_Shift_R:
-        mask = FcitxKeyState_Shift;
+        mask = fcitx::KeyState::Shift;
         break;
 
     case FcitxKey_Control_L:
     case FcitxKey_Control_R:
-        mask = FcitxKeyState_Ctrl;
+        mask = fcitx::KeyState::Ctrl;
         break;
 
     case FcitxKey_Alt_L:
     case FcitxKey_Alt_R:
     case FcitxKey_Meta_L:
-        mask = FcitxKeyState_Alt;
+        mask = fcitx::KeyState::Alt;
         break;
 
     default:
         break;
     }
 
-    if (mask) {
-        if (down) state |= mask;
-        else state &= ~mask;
+    if (mask == fcitx::KeyState::NoState) {
+        if (down) calculatedState = (uint32_t)state | (uint32_t)mask;
+        else calculatedState = (uint32_t)state & ~(uint32_t)mask;
     }
 
-    return state;
+    return fcitx::KeyState(calculatedState);
 }
 

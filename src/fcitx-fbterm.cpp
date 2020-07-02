@@ -162,39 +162,24 @@ static int is_double_width(unsigned ucs)
 
 static unsigned int text_width(char* str)
 {
-    if (iconvW == NULL)
-        iconvW = iconv_open("ucs-4be", "utf-8");
-    if (iconvW == (iconv_t) -1)
-    {
-        return fcitx_utf8_strlen(str);
-    }
-    else
-    {
-        size_t len = strlen(str);
-        size_t charlen = fcitx_utf8_strlen(str);
-        unsigned *wmessage;
-        size_t wlen = (len + 1) * sizeof (unsigned);
-        wmessage = (unsigned *) fcitx_utils_malloc0 ((len + 1) * sizeof (unsigned));
+    int width = 0;
+    size_t charlen = fcitx_utf8_strlen(str);
 
-        char *inp = str;
-        char *outp = (char*) wmessage;
+    if (charlen > 0) {
+        // Make it a string object for easier manipulation
+        std::string _str(str);
 
-        iconv(iconvW, &inp, &len, &outp, &wlen);
-
-        int i = 0;
-        int width = 0;
-        for (i = 0; i < charlen; i ++)
-        {
-            if (is_double_width(wmessage[i]))
+        for (auto c : fcitx::utf8::MakeUTF8CharRange(_str)) {
+            if (is_double_width(c)) {
                 width += 2;
-            else
+            }
+            else {
                 width += 1;
+            }
         }
-
-
-        free(wmessage);
-        return width;
     }
+
+    return width;
 }
 
 static void im_show(unsigned winid)

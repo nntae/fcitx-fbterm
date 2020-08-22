@@ -100,7 +100,7 @@ static int cursor_x;
 static int cursor_y;
 static GMainLoop *main_loop;
 static FcitxGClient* client;
-static fcitx::KeyState state;
+static fcitx::KeyStates state;
 static int active = 0;
 static Info currentInfo;
 static char textup[BUFSIZE];
@@ -241,7 +241,7 @@ static void process_raw_key(char *buf, unsigned int len)
             fcitx_g_client_focus_in(client);
 
             if (keysym == FcitxKey_None || fcitx_g_client_process_key_sync(client, keysym, code,
-                                                                           static_cast<guint32>(state), down ? FALSE : TRUE, 0) <= 0) {
+                                                                           state.toInteger(), down ? FALSE : TRUE, 0) <= 0) {
                 char *str = keysym_to_term_string(linux_keysym, down);
                 if (str)
                     put_im_text(str, strlen(str));

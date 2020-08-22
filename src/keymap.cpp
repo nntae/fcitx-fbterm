@@ -273,10 +273,9 @@ FcitxKeySym linux_keysym_to_fcitx_keysym(unsigned short keysym, unsigned short k
     return FcitxKeySym(keyval);
 }
 
-fcitx::KeyState calculate_modifiers(fcitx::KeyState state, FcitxKeySym keyval, char down)
+fcitx::KeyStates calculate_modifiers(fcitx::KeyStates state, FcitxKeySym keyval, char down)
 {
-    uint32_t calculatedState;
-    fcitx::KeyState mask = fcitx::KeyState::NoState;
+    fcitx::KeyStates mask = fcitx::KeyState::NoState;
     switch (keyval) {
     case FcitxKey_Shift_L:
     case FcitxKey_Shift_R:
@@ -298,11 +297,11 @@ fcitx::KeyState calculate_modifiers(fcitx::KeyState state, FcitxKeySym keyval, c
         break;
     }
 
-    if (mask == fcitx::KeyState::NoState) {
-        if (down) calculatedState = (uint32_t)state | (uint32_t)mask;
-        else calculatedState = (uint32_t)state & ~(uint32_t)mask;
+    if (mask != fcitx::KeyState::NoState) {
+        if (down) state |= mask;
+        else state &= ~mask;
     }
 
-    return fcitx::KeyState(calculatedState);
+    return state;
 }
 
